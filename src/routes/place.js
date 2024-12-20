@@ -69,7 +69,6 @@ function Place() {
     const [loadingOllama, setloadingOllama] = useState(false);
     const { language = 'en' } = useParams();
     const fetchedRef = useRef(false);
-    const navigate = useNavigate();
     const { t, i18n } = useTranslation();
 
     React.useEffect(() => {
@@ -177,7 +176,7 @@ function Place() {
             });
             if (response.status === 401){
                 alert(t("Unauthorized, please login."))
-                window.location.href = `/GlobeTrek/${language}/login`;
+                window.location.href = `/GlobeTrek-app/#/${language}/login`;
                 return;
             }
 
@@ -266,7 +265,8 @@ function Place() {
                         } catch (error) {
                         }
                         alert(t("Itinerary removed"))
-                        navigate(`/GlobeTrek/${language}/home/${itinerary.owner}`);
+                        window.location.href = `/GlobeTrek-app/#/${language}/home/${itinerary.owner}`;
+                        window.location.reload();
                     }}
                     >{t('Remove')}</Button>
                 </Box>

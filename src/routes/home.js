@@ -17,7 +17,7 @@ function Element() {
   const [user, setUser] = useState(null);
   const [loadingUser, setLoadingUser] = useState(true);
   const [loadingItinerary, setLoadingItinerary] = useState(true);
-  const { user_id } = useParams();
+  const [user_id, setUser_id] = useState('undefined');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(4);
   const [countriesArray, setCountriesArray] = useState([]);
@@ -28,7 +28,7 @@ function Element() {
   const { language: paramLanguage = 'en' } = useParams();
   const language = localStorage.getItem("language") || paramLanguage || 'en';
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (language) {
       i18n.changeLanguage(language);
     }
@@ -36,50 +36,77 @@ function Element() {
   
   useEffect(() => {
     const fetchUser = async () => {
-      if (!user_id){
-        const params = new URLSearchParams(window.location.search);
+      const hash = window.location.hash;
+      const idRegex = /\/home\/(\d+)/;
+      const idMatch = hash.match(idRegex);
+      const userId = idMatch ? idMatch[1] : null;
+      setUser_id(userId);
+      
+      if (!userId) {
+        const queryIndex = hash.indexOf("?");
+        const queryString = queryIndex !== -1 ? hash.substring(queryIndex) : "";
+        const params = new URLSearchParams(queryString);
+  
         const token = params.get('token');
         const id = params.get('id');
-        localStorage.setItem("access_token", token);
+  
+        if (token) {
+          localStorage.setItem("access_token", token);
+        }
+  
         const redirectLanguage = localStorage.getItem("language") || 'en';
-        window.location.href = `/GlobeTrek/${redirectLanguage}/home/${id}`;
+        window.location.href = `/GlobeTrek-app/#/${redirectLanguage}/home/${id}`;
+        window.location.reload();
+        return;
       }
-
+  
       const token = localStorage.getItem("access_token");
-
+  
       try {
-        const response = await fetch(`${process.env.REACT_APP_GATEWAY_URL}/user/${user_id}`, {
+        const response = await fetch(`${process.env.REACT_APP_GATEWAY_URL}/user/${userId}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
             "Authorization": `Bearer ${token}`,
           },
         });
-
-        if (response.status === 401 || !response.ok){
-          alert(t("Unauthorized, please login."))
-          window.location.href = `/GlobeTrek/${language}/login`;
+  
+        if (response.status === 401 || !response.ok) {
+          alert(t("Unauthorized, please login."));
+          const redirectLanguage = localStorage.getItem("language") || 'en';
+          window.location.href = `/GlobeTrek-app/#/${redirectLanguage}/login`;
           return;
         }
-        
+  
         const data = await response.json();
         setUser(data);
-
+  
         if (data.countries) {
-          const parsedCountries = data.countries.replace(/"/g, '').replace(/{|}/g, '').split(',').map((country) => country.trim());
+          const parsedCountries = data.countries
+            .replace(/"/g, '')
+            .replace(/{|}/g, '')
+            .split(',')
+            .map((country) => country.trim());
           setCountriesArray(parsedCountries);
         }
-
-        fetchItineraries();
-
+  
       } catch (error) {
         console.error('Error fetching user:', error);
       } finally {
         setLoadingUser(false);
       }
     };
-
+  
+    if (!fetchedRef.current) {
+      fetchUser();
+      fetchedRef.current = true;
+    }
+  }, []);
+  
+  useEffect(() => {
     const fetchItineraries = async () => {
+      if (!user_id) return;
+  
       try {
         const response = await fetch(`${process.env.REACT_APP_GATEWAY_URL}/itineraries/byUser/${user_id}`, {
           method: 'GET',
@@ -92,7 +119,7 @@ function Element() {
           throw new Error('Error: ' + response.statusText);
         }
         const data = await response.json();
-
+  
         const itineraries = data.itineraries.map((itinerary) => ({
           name: itinerary.destination,
           id: itinerary._id,
@@ -105,14 +132,9 @@ function Element() {
         setLoadingItinerary(false);
       }
     };
-
-    if (!fetchedRef.current) {
-      fetchUser();
-      fetchedRef.current = true;
-    }
+  
+    fetchItineraries();
   }, [user_id]);
-
-  const navigate = useNavigate();
 
   const calculateItemsPerPage = () => {
     if (containerRef.current) {
@@ -149,8 +171,6 @@ function Element() {
   useEffect(() => {
     localStorage.setItem('itemsPerPage', itemsPerPage);
   }, [currentIndex, itemsPerPage]);
-
-  const totalCountriesToShow = 10;
 
   const totalPages = Math.ceil(itinerariesNames.length / itemsPerPage);
 
@@ -252,9 +272,8 @@ function Element() {
                           <Box
                             key={country.id}
                             onClick={() => {
-                              navigate(
-                                `/GlobeTrek/${language}/place/${country.id}`
-                              );
+                              window.location.href = `/GlobeTrek-app/#/${language}/place/${country.id}`;
+                              window.location.reload();
                             }}
                             sx={{
                               textAlign: 'center',
@@ -343,7 +362,8 @@ function Element() {
                         );
                       }
                       const data = await response.json();
-                      navigate(`/GlobeTrek/${language}/place/${data._id}`);
+                      window.location.href = `/GlobeTrek-app/#/${language}/place/${data._id}`;
+                      window.location.reload();
                     } catch (error) {
                       console.error(
                         'Error creating itinerary:',

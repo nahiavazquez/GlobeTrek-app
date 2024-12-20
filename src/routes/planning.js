@@ -57,8 +57,6 @@ function Planning() {
     fetchItineraries();
   }, [user_id]);
 
-  const navigate = useNavigate();
-
   const calculateItemsPerPage = () => {
     if (containerRef.current) {
       const containerWidth = containerRef.current.offsetWidth;
@@ -137,7 +135,11 @@ function Planning() {
                   .slice(pageIndex * itemsPerPage, (pageIndex + 1) * itemsPerPage)
                   .slice(0, totalCountriesToShow)
                   .map((country) => (
-                    <Box key={country.id} onClick={() => { navigate(`/GlobeTrek/${language}/place/${country.id}`) }} sx={{ margin: '0 10px', textAlign: 'center' }}>
+                    <Box key={country.id} onClick={() => {
+                      window.location.href = `/GlobeTrek-app/#/${language}/place/${country.id}`;
+                      window.location.reload();
+                      }} 
+                      sx={{ margin: '0 10px', textAlign: 'center' }}>
                       <img src={country.flag} alt={`${country.country} flag`} style={{ width: '9vw', height: '9vw', borderRadius: '50%', objectFit: 'cover' }} />
                       <Typography>{country.name}</Typography>
                     </Box>
@@ -176,7 +178,8 @@ function Planning() {
                 throw new Error('Network response was not ok ' + response.statusText);
                 }
                 const data = await response.json();
-                navigate(`/GlobeTrek/${language}/place/${data._id}`)
+                window.location.href = `/GlobeTrek-app/#/${language}/place/${data._id}`;
+                window.location.reload();
         
             } catch (error) {
                 console.error('Error fetching creating itinerary:', error);

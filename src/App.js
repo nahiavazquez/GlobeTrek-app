@@ -1,6 +1,5 @@
 import React from 'react';
-import { Routes, Route, useParams, Outlet } from 'react-router-dom';
-import { Container } from '@mui/material';
+import { Routes, Route, useParams, Outlet, HashRouter } from 'react-router-dom';
 import Login from './routes/login';
 import Register from './routes/register';
 import NewPassword from './routes/new_password';
@@ -17,7 +16,7 @@ function ValidateLanguage() {
   const { language } = useParams();
 
   if (!allowedLanguages.includes(language)) {
-    return window.location.href = "/GlobeTrek/en/login";
+    return window.location.href = "/en/login";
   }
 
   return <Outlet />;
@@ -25,10 +24,9 @@ function ValidateLanguage() {
 
 function App() {
   return (
-    <div>
-      <Container>
-        <Routes>
-        <Route path="/GlobeTrek/:language" element={<ValidateLanguage />}>
+    <HashRouter>
+      <Routes>
+        <Route path="/:language" element={<ValidateLanguage />}>
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
           <Route path="new_password" element={<NewPassword />} />
@@ -40,10 +38,9 @@ function App() {
           <Route path="done/:user_id" element={<Done />} />
           <Route path="place/:place_id" element={<Place />} />
         </Route>
-          <Route path="/GlobeTrek/*" element={<ErrorPage />} />
-        </Routes>
-      </Container>
-    </div>
+        <Route path="/*" element={<ErrorPage />} />
+      </Routes>
+    </HashRouter>
   );
 }
 

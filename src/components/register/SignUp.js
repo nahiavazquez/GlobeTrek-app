@@ -190,7 +190,7 @@ export default function SignUp() {
             </FormControl>
             <Button type="submit" fullWidth variant="contained">{t('Sign up')}</Button>
             <Typography sx={{ textAlign: 'center' }}>
-              {t('Already have an account?')} <Link href={`/GlobeTrek/${language}/login`}>{t('Sign in')}</Link>
+              {t('Already have an account?')} <Link href={`/GlobeTrek-app/#/${language}/login`}>{t('Sign in')}</Link>
             </Typography>
           </Box>
           <Divider>

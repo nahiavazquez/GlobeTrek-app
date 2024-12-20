@@ -129,7 +129,7 @@ export default function SignIn(props) {
 
         localStorage.setItem("access_token", data.access_token);
 
-        window.location.href = `/GlobeTrek/${language}/home/${data.user_id}`;
+        window.location.href = `/GlobeTrek-app/#/${language}/home/${data.user_id}`;
     } catch (error) {
         console.error("Login failed:", error.message);
         alert("An error occurred during login. Please try again.");
@@ -234,7 +234,7 @@ const validateInputs = () => {
               {t('Don’t have an account?')}{' '}
               <span>
                 <Link
-                  href={`/GlobeTrek/${language}/register`}
+                  href={`/GlobeTrek-app/#/${language}/register`}
                   variant="body2"
                   sx={{ alignSelf: 'center' }}
                 >

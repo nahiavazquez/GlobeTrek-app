@@ -1,7 +1,7 @@
 {
   "name": "globetrek",
   "version": "0.1.0",
-  "homepage": "https://nahiavazquez.github.io/GlobeTrek-app",
+  "homepage": "https://nahiavazquez.github.io/GlobeTrek-app/#",
   "private": true,
   "proxy": "http://localhost:8888",
   "dependencies": {

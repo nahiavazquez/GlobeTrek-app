@@ -13,7 +13,7 @@ const VisitedCountriesChart = ({countries = []}) => {
     };
 
     return (
-        <div style={{ height: '35vh', width: '25vw', paddingRight: '1vw' }}>
+        <div style={{ height: '30vh', width: '20vw', paddingRight: '1vw' }}>
             <PieChart
             colors={['#959ffc', '#beefef']}
                 series={[

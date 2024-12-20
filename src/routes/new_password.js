@@ -43,7 +43,7 @@ function NewPassword() {
         const id = params.get('id');
         localStorage.setItem("access_token", token);
         const redirectLanguage = localStorage.getItem("language") || 'en';
-        window.location.href = `/GlobeTrek/${redirectLanguage}/new_password/${id}`;
+        window.location.href = `/GlobeTrek-app/#/${redirectLanguage}/new_password/${id}`;
         return;
       }
 
@@ -58,7 +58,7 @@ function NewPassword() {
 
         if (!response.ok) {
           alert(t("Unauthorized, please login."))
-          window.location.href = `/GlobeTrek/${language}/login`;
+          window.location.href = `/GlobeTrek-app/#/${language}/login`;
           return;
         }
 
@@ -118,7 +118,7 @@ function NewPassword() {
       if (response.status === 401) {
         alert('401 Unauthorized');
       } else if (response.ok) {
-        window.location.href = `/GlobeTrek/${language}/home/${user_id}`;
+        window.location.href = `/GlobeTrek-app/#/${language}/home/${user_id}`;
       } else {
         const errorMessage = await response.text();
         alert(`Error: ${errorMessage}`);

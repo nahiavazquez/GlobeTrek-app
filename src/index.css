@@ -12,8 +12,16 @@ code {
     monospace;
 }
 
+.css-157ayuk {
+  --AppBar-background: rgb(245, 250, 253) !important;
+}
+
 .css-1lwhjos-MuiPaper-root-MuiDrawer-paper , .css-1ygil4i-MuiToolbar-root {
   background-color: rgb(245, 250, 253) !important;
+}
+
+#root > div > div.MuiBox-root.css-0 > header {
+  --AppBar-background: rgb(245, 250, 253) !important;
 }
 
 .css-1lwhjos-MuiPaper-root-MuiDrawer-paper {
