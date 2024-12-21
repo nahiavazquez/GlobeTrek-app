@@ -34,10 +34,13 @@ function NewPassword() {
   const token = localStorage.getItem("access_token");
   const { language = 'en' } = useParams();
   const { t } = useTranslation();
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const handleDialogClose = () => setOpenDialog(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!user_id){
+      if (!user_id) {
         const params = new URLSearchParams(window.location.search);
         const token = params.get('token');
         const id = params.get('id');
@@ -57,7 +60,7 @@ function NewPassword() {
         });
 
         if (!response.ok) {
-          alert(t("Unauthorized, please login."))
+          setOpenDialog(true);
           window.location.href = `/GlobeTrek-app/#/${language}/login`;
           return;
         }
@@ -75,7 +78,7 @@ function NewPassword() {
 
         if (userData.countries) {
           const parsedCountries = userData.countries.replace(/"/g, '').replace(/{|}/g, '').split(',').map((country) => country.trim());
-          if (parsedCountries[0].length !== 0){
+          if (parsedCountries[0].length !== 0) {
             setSelectedCountries(parsedCountries);
           }
         }
@@ -105,19 +108,17 @@ function NewPassword() {
           'Content-Type': 'application/json',
           "Authorization": `Bearer ${token}`
         },
-        
+
         body: JSON.stringify({
           name: data.name,
           email: data.email,
           password: password,
           birthday: birthday ? birthday.format('YYYY-MM-DD') : null,
-          countries: selectedCountries  
+          countries: selectedCountries
         }),
       });
 
-      if (response.status === 401) {
-        alert('401 Unauthorized');
-      } else if (response.ok) {
+      if (response.ok) {
         window.location.href = `/GlobeTrek-app/#/${language}/home/${user_id}`;
       } else {
         const errorMessage = await response.text();
@@ -127,9 +128,9 @@ function NewPassword() {
   };
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-      <Box sx={{"width": '40vw', marginTop: '10vh', padding: '5vh', borderRadius: '30px', backgroundColor: '#f5fafd'}}>    
-        <GTAppBar user_id={user_id} withMenu={true}/>
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <Box sx={{ "width": '40vw', marginTop: '10vh', padding: '5vh', borderRadius: '30px', backgroundColor: '#f5fafd' }}>
+        <GTAppBar user_id={user_id} withMenu={true} />
         <form onSubmit={handleSubmit}>
           <FormControl fullWidth>
             <FormLabel htmlFor="password">{t('New password')}</FormLabel>
@@ -174,13 +175,13 @@ function NewPassword() {
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 format="DD/MM/YYYY"
-                value={birthday} 
-                onChange={(newValue) => setBirthday(newValue)} 
+                value={birthday}
+                onChange={(newValue) => setBirthday(newValue)}
                 renderInput={(params) => <TextField {...params} />}
               />
             </LocalizationProvider>
 
-            <FormLabel htmlFor="visitedCountries" sx={{marginTop: '3vh'}}>{t("Countries you've visited")}</FormLabel>
+            <FormLabel htmlFor="visitedCountries" sx={{ marginTop: '3vh' }}>{t("Countries you've visited")}</FormLabel>
             <Autocomplete
               multiple limitTags={1} disableCloseOnSelect options={countries}
               getOptionLabel={(option) => option} onChange={(event, newValue) => setSelectedCountries(newValue)}
@@ -192,11 +193,17 @@ function NewPassword() {
             />
           </FormControl>
 
-          <Button type="submit" variant="contained" sx={{ backgroundColor: '#a4affe', marginTop: '3vh'}}>
+          <Button type="submit" variant="contained" sx={{ backgroundColor: '#a4affe', marginTop: '3vh' }}>
             Save
           </Button>
-        </form>  
+        </form>
       </Box>
+      <Dialog open={openDialog} onClose={handleDialogClose}>
+        <DialogTitle>t("Unauthorized, please login.");</DialogTitle>
+        <DialogActions>
+          <Button onClick={handleDialogClose}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

@@ -27,6 +27,9 @@ function Element() {
   const { t, i18n } = useTranslation();
   const { language: paramLanguage = 'en' } = useParams();
   const language = localStorage.getItem("language") || paramLanguage || 'en';
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const handleDialogClose = () => setOpenDialog(false);
 
   useEffect(() => {
     if (language) {
@@ -72,7 +75,7 @@ function Element() {
         });
   
         if (response.status === 401 || !response.ok) {
-          alert(t("Unauthorized, please login."));
+          setOpenDialog(true);
           const redirectLanguage = localStorage.getItem("language") || 'en';
           window.location.href = `/GlobeTrek-app/#/${redirectLanguage}/login`;
           return;
@@ -414,6 +417,13 @@ function Element() {
           </Box>
         )
       )}
+
+      <Dialog open={openDialog} onClose={handleDialogClose}>
+        <DialogTitle>t("Unauthorized, please login.");</DialogTitle>
+        <DialogActions>
+          <Button onClick={handleDialogClose}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }  

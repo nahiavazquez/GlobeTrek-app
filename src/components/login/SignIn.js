@@ -16,6 +16,12 @@ import AppTheme from '../../../src/shared-theme/AppTheme';
 import { useTranslation } from 'react-i18next';
 import { GTAppBar } from '../../components/AppBar'
 import { useParams } from 'react-router-dom';
+import { useState } from 'react';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -65,6 +71,10 @@ export default function SignIn(props) {
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const { t, i18n } = useTranslation();
   const { language = 'en' } = useParams();
+  const [openDialog, setOpenDialog] = useState(false);
+  const [dialogText, setDialogText] = useState('');
+
+  const handleDialogClose = () => setOpenDialog(false);
 
   async function googleauth() {
     localStorage.setItem("language", language);
@@ -110,21 +120,12 @@ export default function SignIn(props) {
             }),
         });
 
-        if (!response.ok) {
-            if (response.status === 400) {
-                alert("Login failed: Incorrect email or password.");
-            } else {
-                const errorText = await response.text();
-                throw new Error(`Error: ${response.status} - ${errorText}`);
-            }
-            return;
-        }
-
         const data = await response.json();
 
-        if (data.user_id === undefined) {
-            alert("User not found.");
-            return;
+        if (data.detail === "Incorrect username or password") {
+          setDialogText("Incorrect email or password.");
+          setOpenDialog(true);
+          return;
         }
 
         localStorage.setItem("access_token", data.access_token);
@@ -132,7 +133,9 @@ export default function SignIn(props) {
         window.location.href = `/GlobeTrek-app/#/${language}/home/${data.user_id}`;
     } catch (error) {
         console.error("Login failed:", error.message);
-        alert("An error occurred during login. Please try again.");
+        setDialogText("An error occurred during login. Please try again.");
+        setOpenDialog(true);
+        return;
     }
 };
 
@@ -255,6 +258,15 @@ const validateInputs = () => {
             </Button>
           </Box>
         </Card>
+        <Dialog open={openDialog} onClose={handleDialogClose}>
+          <DialogTitle>Login failed</DialogTitle>
+          <DialogContent>
+            <DialogContentText>{dialogText}</DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleDialogClose}>Close</Button>
+          </DialogActions>
+        </Dialog>
       </SignInContainer>
     </ThemeProvider>
   );
